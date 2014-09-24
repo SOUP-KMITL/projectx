@@ -6,9 +6,15 @@ set :tmp do
 end
 
 post '/sessions' do
+  targets = params[:targets]
+  
   context = {}
-  context[:target] = params[:target]
   context[:tmp]    = settings.tmp
-  nmap_adapter     = NmapAdapter.new(context: context)
-  nmap_adapter.run
+
+  targets.each do |target|
+    context[:target] = target
+
+    nmap_adapter     = NmapAdapter.new(context: context)
+    nmap_adapter.run
+  end
 end
