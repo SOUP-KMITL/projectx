@@ -1,11 +1,15 @@
+require 'bundler/setup'
 require 'sinatra/base'
 require 'sinatra/json'
 require 'neography'
 
-require_relative 'apis/attack_nodes'
-require_relative 'apis/service_nodes'
+$:.unshift(File.expand_path('../', __FILE__))
+require 'apis/attack_nodes'
+require 'apis/service_nodes'
+require 'apis/vuln_nodes'
 
 class XAttackGraph < Sinatra::Base
   use XAttackGraphAPI::AttackNodes
   use XAttackGraphAPI::ServiceNodes
+  use XAttackGraphAPI::VulnNodes
 end

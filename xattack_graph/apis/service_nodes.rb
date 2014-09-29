@@ -17,11 +17,7 @@ module XAttackGraphAPI
 
     post '/sessions/:session_id/nodes/:node_addr/services' do
       node               = @neo.find_nodes_labeled('Host', addr: params[:node_addr])
-      service_properties = { protocol: params[:protocol],
-                             service_name: params[:service_name],
-                             port_id: params[:port_id],
-                             conf: params[:conf],
-                             state: params[:state] }
+      service_properties = params[:properties]
       service            = @neo.create_node(service_properties)
       @neo.add_label(service, 'Service')
       @neo.create_relationship('has_service', node, service)

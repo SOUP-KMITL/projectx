@@ -15,19 +15,21 @@ module XAttackGraphAPI
     end
 
     post '/sessions/:session_id/nodes' do
-      node_properties = { addrtype: params[:addrtype],
-                          addr: params[:addr],
-                          state: params[:state] }
-      node = @neo.create_node(node_properties)
+      node_properties = params[:properties]
+      node            = @neo.create_node(node_properties)
       @neo.add_label(node, 'Host')
 
       200
     end
 
     get '/sessions/:session_id/nodes/:node_addr' do
-      node = @neo.find_nodes_labeled('Host', addr: params[:node_addr]).first['data']
+      node = @neo.find_nodes_labeled('Host', addr: params[:node_addr]).first
 
-      json node
+      unless node.nil?
+        json node['data']
+      else
+        400
+      end
     end
 
     put '/sessions/:session_id/nodes/:node_addr' do
