@@ -64,18 +64,32 @@ module AttackGraph
         end
 
         def all
+          node_array = self.get(base_collection_path).to_a
           node_array.map! do |node|
-            new(node['data'])
+            new(node)
           end
         end
 
-        def find
+        def count
+          all.count
         end
 
-        def where
+        def find(node_id)
+          response  = self.get(base_singular_path(node_id))
+
+          if response.code == 200
+            node_hash = response.to_h
+            new(node_hash)
+          else
+            nil
+          end
+        end
+
+        def where(properties)
         end
 
         def clear
+          self.delete(base_collection_path)
         end
 
         def base_path(path=nil)
@@ -86,6 +100,14 @@ module AttackGraph
         def primary_key(key=nil)
           return @primary_key if key.nil?
           @primary_key = key
+        end
+
+        def base_singular_path(node_id)
+          "#{base_collection_path}/#{node_id}"
+        end
+
+        def base_collection_path
+          "/sessions/#{@@session_id}#{base_path}"
         end
 
         def has_many(collection, options)
