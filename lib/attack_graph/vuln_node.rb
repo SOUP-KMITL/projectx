@@ -3,32 +3,34 @@ require_relative 'node'
 
 module AttackGraph
   class VulnNode < Node
-    include HTTParty
-    base_uri 'localhost:9292' # FIXME
-
     attr_accessor :session_id, :properties
+    attr_reader   :service_node
 
-    def initialize(session_id, node_id, service_port_id, properties)
-      @session_id = session_id || 1234
-      @node_id    = node_id
-      @service_port_id = service_port_id
-      @properties = properties
+    def initialize(session_id, service_node, properties)
+      @session_id   = session_id || 1234
+      @service_node = service_node
+      @properties   = properties
     end
 
-    def save
-      self.class.post("/sessions/#{@session_id}/nodes/#{@node_id}/services/#{service_port_id}", body: @properties)
+    def create_path
+      "/sessions/#{@session_id}/nodes/#{attack_node_addr}/services/#{service_node_id}/vulns"
     end
 
-    def destroy
+    def create_data
+      @properties
     end
 
-    def method_missing
-      # TODO: search in @properties
+    def service_node_id
+      @service_node.port_id
+    end
+
+    def attack_node_addr
+      @service_node.attack_node_addr
     end
 
     class << self
-      def all(session_id, node_id)
-        get("/sessions/#{session_id}/nodes/#{node_id}/services")
+      def all(session_id, attack_node)
+        get("/sessions/#{session_id}/nodes/#{attack_node.addr}/services")
       end
     end
   end

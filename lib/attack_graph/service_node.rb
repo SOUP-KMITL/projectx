@@ -3,6 +3,7 @@ require_relative 'node'
 module AttackGraph
   class ServiceNode < Node
     attr_accessor :session_id, :properties
+    attr_reader   :attack_node
 
     def initialize(session_id, attack_node, properties)
       @session_id  = session_id || 1234
@@ -14,17 +15,20 @@ module AttackGraph
     end
 
     def create_path
-      node_addr = @attack_node.addr
-      "/sessions/#{@session_id}/nodes/#{node_addr}/services"
+      "/sessions/#{@session_id}/nodes/#{attack_node_addr}/services"
     end
 
     def create_data
       @properties
     end
 
+    def attack_node_addr
+      @attack_node.addr
+    end
+
     class << self
       def all(session_id, attack_node)
-        get("/sessions/#{session_id}/nodes/#{node_id}/services")
+        get("/sessions/#{session_id}/nodes/#{attack_node_addr}/services")
       end
 
       def create(session_id, attack_node, properties)
