@@ -37,7 +37,7 @@ module AttackGraph
       end
 
       def persisted?
-        @persisted ||= self.class.get(base_singular_path)[self.class.primary_key.to_s]
+        self.class.get(base_singular_path)[self.class.primary_key.to_s]
       end
 
       def belongs_to(active_node)
