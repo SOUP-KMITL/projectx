@@ -54,7 +54,7 @@ module XS
                 addrtype: host_hash['host']['address']['addrtype'],
                 state: host_hash['host']['status']['state']
               }
-              host_node = AttackGraph::AttackNode.create(FAKE_SID, host_attrs)
+              host_node = AttackGraph::AttackNode.create(host_attrs)
               host_nodes << host_node
             end
           end
@@ -70,7 +70,7 @@ module XS
                 service_name: service_hash['service']['name'],
                 conf: service_hash['service']['conf']
               }
-              AttackGraph::ServiceNode.create(FAKE_SID, host_node, service_attrs)
+              host_node.services.create(service_attrs)
             end
           end
 

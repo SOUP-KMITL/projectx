@@ -4,10 +4,7 @@ require 'bundler/setup'
 require 'thor'
 
 require_relative 'strategies/default'
-require_relative '../../../lib/attack_graph/node'
-Dir[File.expand_path('../../../../lib/attack_graph/*.rb', __FILE__)].each do |file|
-  require file
-end
+require_relative '../../../lib/xlib'
 
 module XS
   module NmapAdapter
