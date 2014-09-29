@@ -33,7 +33,7 @@ module AttackGraph
       end
 
       def clear
-        self.class.destroy(collection_path)
+        self.class.delete(collection_path)
       end
 
       def reload
