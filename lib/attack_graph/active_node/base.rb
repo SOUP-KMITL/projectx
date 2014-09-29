@@ -33,7 +33,7 @@ module AttackGraph
       end
 
       def method_missing(m, *args, &block)
-        @properties[m.to_sym] || super
+        @properties[m] || @properties[m.to_s] || super
       end
 
       def persisted?
