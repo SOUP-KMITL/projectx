@@ -15,10 +15,14 @@ module AttackGraph
       end
 
       def each(&block)
-        to_a.each(*block)
+        to_a.each(&block)
       end
 
       def build
+      end
+
+      def singular_path(id)
+        "#{collection_path}/#{id}"
       end
 
       def collection_path
@@ -26,14 +30,29 @@ module AttackGraph
       end
 
       def create(properties)
-        puts self.class.post(collection_path, body: { properties: properties })
+        self.class.post(collection_path, body: { properties: properties })
         active_node = active_node_class.new(properties)
         active_node.belongs_to(@parent_node)
         active_node
       end
 
+      def count
+        to_a.count
+      end
+
       def clear
         self.class.delete(collection_path)
+      end
+
+      def find(id)
+        response = self.class.get(singular_path(id))
+
+        if response.code == 200
+          node_hash = response.to_h
+          active_node_class.new(node_hash)
+        else
+          nil
+        end
       end
 
       def reload
