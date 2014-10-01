@@ -33,7 +33,19 @@ module AttackGraph
       end
 
       def method_missing(m, *args, &block)
-        @properties[m] || @properties[m.to_s] || super
+        m = m.to_s
+        if m[-1] == '='
+          m.chop!
+          if @properties[m.to_sym]
+            @properties[m.to_sym] = args.first
+          elsif @properties[m]
+            @properties[m] = args.first
+          else
+            super
+          end
+        else
+          @properties[m.to_sym] || @properties[m] || super
+        end
       end
 
       def persisted?
