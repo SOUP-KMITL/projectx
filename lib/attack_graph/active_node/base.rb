@@ -1,4 +1,5 @@
 require 'httparty'
+require 'active_support/hash_with_indifferent_access'
 
 module AttackGraph
   module ActiveNode
@@ -12,8 +13,8 @@ module AttackGraph
       attr_reader :properties
 
       def initialize(properties = {})
-        @belongs_tos        = []
-        @properties         = properties
+        @belongs_tos = []
+        @properties  = ActiveSupport::HashWithIndifferentAccess.new(properties)
       end
 
       def save
@@ -33,19 +34,11 @@ module AttackGraph
       end
 
       def method_missing(m, *args, &block)
-        m = m.to_s
         if m[-1] == '='
-          m.chop!
-          if @properties[m.to_sym]
-            @properties[m.to_sym] = args.first
-          elsif @properties[m]
-            @properties[m] = args.first
-          else
-            super
-          end
-        else
-          @properties[m.to_sym] || @properties[m] || super
+          m = m.to_s.chop!
+          return (@properties[m] = args.first) if @properties[m]
         end
+        @properties[m] || super
       end
 
       def persisted?
