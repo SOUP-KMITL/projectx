@@ -4,6 +4,7 @@ module XAttackGraphAPI
       @neo = Neography::Rest.new
     end
 
+    # INDEX
     get '/sessions/:session_id/nodes/:node_addr/services' do
       node             = @neo.find_nodes_labeled('Host', addr: params[:node_addr])
       has_service_rels = @neo.get_node_relationships(node, 'out', 'has_service')
@@ -15,6 +16,7 @@ module XAttackGraphAPI
       json services
     end
 
+    # CREATE
     post '/sessions/:session_id/nodes/:node_addr/services' do
       node               = @neo.find_nodes_labeled('Host', addr: params[:node_addr])
       service_properties = params[:properties]
@@ -22,20 +24,26 @@ module XAttackGraphAPI
       @neo.add_label(service, 'Service')
       @neo.create_relationship('has_service', node, service)
 
-      200
+      reloaded_properties = @neo.get_node_properties(service)
+      json reloaded_properties
     end
 
+    # SHOW
     get '/sessions/:session_id/nodes/:node_addr/services/:service_port_id' do
       service = find_service(params)
 
       json service['data']
     end
 
+    # UPDATE
     put '/sessions/:session_id/nodes/:node_addr/services/:service_port_id' do
       service_node = find_service(params)
-      puts params[:properties]
       @neo.set_node_properties(service_node, params[:properties])
       200
+    end
+
+    # DESTROY
+    delete '/sessions/:session_id/nodes/:node_addr/services/:service_port_id' do
     end
 
     private
