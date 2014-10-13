@@ -22,8 +22,18 @@ describe AttackGraph::ServiceNode do
     it 'returns empty array when has no vulnerabilities' do
       expect(service_node.vulnerabilities).to be_empty
     end
+  end
 
-    it 'returns correct array when has vulnerabilities'
+  describe '#has_service?' do
+    it 'returns the service if has that service' do
+      service_nodes
+      expect(attack_node.has_service?(:ssh)).to be_truthy
+    end
+
+    it 'returns nil if doesn\'t has that service' do
+      service_nodes
+      expect(attack_node.has_service?(:mysql)).to be_falsy
+    end
   end
 
   describe '#empty?' do
@@ -47,6 +57,7 @@ describe AttackGraph::ServiceNode do
   end
 
   describe '.clear' do
+    it 'clears out all the services of that node'
   end
 
   describe '#each' do
