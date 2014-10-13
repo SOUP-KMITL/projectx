@@ -30,8 +30,8 @@ module AttackGraph
       end
 
       def create(properties)
-        self.class.post(collection_path, body: { properties: properties })
-        active_node = active_node_class.new(properties)
+        response = self.class.post(collection_path, body: { properties: properties })
+        active_node = active_node_class.new(response.to_hash)
         active_node.belongs_to(@parent_node)
         active_node
       end
@@ -48,8 +48,10 @@ module AttackGraph
         response = self.class.get(singular_path(id))
 
         if response.code == 200
-          node_hash = response.to_h
-          active_node_class.new(node_hash)
+          node_hash   = response.to_h
+          active_node = active_node_class.new(node_hash)
+          active_node.belongs_to(@parent_node)
+          active_node
         else
           nil
         end
