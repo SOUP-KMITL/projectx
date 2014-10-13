@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require_relative 'application'
+
+XA::HydraAdapter::Application.start
