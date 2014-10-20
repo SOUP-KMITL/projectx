@@ -1,20 +1,11 @@
-require_relative '../boot'
-require 'sinatra'
+require 'bundler/setup'
+require 'sinatra/base'
+require 'sinatra/json'
 
-set :tmp do
-  File.expand_path('../../tmp', __FILE__)
-end
+require_relative 'application'
 
-post '/sessions' do
-  targets = params[:targets]
-  
-  context = {}
-  context[:tmp]    = settings.tmp
-
-  targets.each do |target|
-    context[:target] = target
-
-    nmap_adapter     = NmapAdapter.new(context: context)
-    nmap_adapter.run
+module XS
+  class XScanner < Sinatra::Base
+    use Application
   end
 end

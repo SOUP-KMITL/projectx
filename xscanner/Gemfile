@@ -1,8 +1,6 @@
 source "https://rubygems.org"
 
 gem 'sinatra'
-gem 'neography'
-
-gem 'activesupport'
-
-gem 'nokogiri'
+gem 'sinatra-contrib'
+gem 'sidekiq'
+gem 'pry'
