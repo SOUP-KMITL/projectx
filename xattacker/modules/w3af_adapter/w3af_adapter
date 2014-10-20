@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require_relative 'application'
+
+XA::W3AFAdapter::Application.start
