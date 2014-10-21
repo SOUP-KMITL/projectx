@@ -7,11 +7,16 @@ require 'active_support/core_ext/hash/conversions'
 
 require_relative '../../../lib/xlib'
 
-Dir[File.expand_path('../strategies/*.rb', __FILE)].each { |f| require f }
-Dir[File.expand_path('../lib/*.rb', __FILE)].each { |f| require f }
+Dir[File.expand_path('../strategies/*.rb', __FILE__)].each { |f| require f }
+Dir[File.expand_path('../lib/*.rb', __FILE__)].each { |f| require f }
 
 module XA
   module W3AFAdapter
+    SEVERITY_LEVEL = {
+      'low' => 3.0,
+      'medium' => 6.0,
+      'high' => 10.0
+    }
 
     class Start < Thor
       desc 'owasp_topten TARGETS', 'Perform OWASP Top 10 Attacking'
@@ -65,9 +70,9 @@ module XA
       def extract_vulnerabilities(service_node, oxml)
         vulnerabilities = oxml.xpath('//vulnerability')
         vulnerabilities.each do |vulnerability|
-          puts "#{vulnerability[:name]}\tSeverity: #{vulnerability[:severity]}"
           service_node.vulnerabilities.create(name: vulnerability[:name],
-                                              severity: vulnerability[:severity])
+                                              severity: SEVERITY_LEVEL[vulnerability[:severity].downcase],
+                                              xmodule: 'w3af_adapter')
         end
       end
     end

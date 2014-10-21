@@ -3,9 +3,9 @@ module XA
     class Auth
       attr_accessor :username, :password
 
-      def initalize(username, password)
-        @username = username
-        @password = password
+      def initialize(options)
+        @username = options[:username]
+        @password = options[:password]
       end
 
       def http_basic?
