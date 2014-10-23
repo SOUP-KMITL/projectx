@@ -1,11 +1,7 @@
 module XS
-  class CommandWorker
-    include Sidekiq::Worker
-
-    def perform(module_name, command)
-      module_path = File.expand_path("../../../modules/#{module_name}", __FILE__)
-      command = "#{module_path}/#{command}"
-      `BUNDLE_GEMFILE=#{module_path}/Gemfile bundle exec #{command}`
+  class CommandWorker < XW::CommandWorker::Base
+    def self.modules_path
+      File.expand_path("../../../modules", __FILE__)
     end
   end
 end

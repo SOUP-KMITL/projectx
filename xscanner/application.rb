@@ -1,6 +1,9 @@
-require 'pry'
-require 'sidekiq'
+require_relative '../lib/xworkers'
 require_relative 'app/workers/command_worker'
+
+Sidekiq.configure_client do |config|
+  config.redis = { :namespace => 'xscanner', :size => 1 }
+end
 
 module XS
   class Session
@@ -35,14 +38,10 @@ module XS
       session_hash = {
         session_id: Session.next_session_id,
       }
-      # puts `#{settings.modules_path}/nmap_adapter/nmap_adapter`
       json session_hash
     end
 
     post '/sessions/:session_id/commands/?' do
-      Sidekiq.configure_client do |config|
-        config.redis = { :namespace => 'x', :size => 1 }
-      end
       command = params[:command]
       module_name = command.split(' ')[0]
       XS::CommandWorker.perform_async(module_name, command)

@@ -1,5 +1,8 @@
+require_relative '../lib/xworkers'
 require_relative 'app/workers/command_worker'
 
-Sidekiq.configure_server do |config|
-  config.redis = { :namespace => 'x' }
+module XS
+  class XScannerWorkers < XW::XWorkers::Base
+    namespace :xscanner
+  end
 end
