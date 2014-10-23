@@ -1,5 +1,3 @@
-require 'bundler/setup'
-
 require 'thor'
 
 require_relative 'strategies/default'
@@ -18,6 +16,13 @@ module XS
         extract_ips(targets_string)
         puts "Scanning targets: #{@targets.inspect}"
         run_at_targets
+      end
+
+      desc 'debug', 'Test running'
+      def debug
+        puts '[DEBUG MODE]'
+        puts 'starting...'
+        puts 'ended'
       end
 
       private
