@@ -1,13 +1,19 @@
 require_relative '../spec_helper'
 
 describe AttackGraph::AttackNode do
+  let(:session_id) do
+    AttackGraph.create_session[:id]
+  end
+
   let(:attack_node) do
     AttackGraph::AttackNode.new(addr: '192.168.99.101')
   end
 
   let(:attack_nodes) do
-    (101..110).to_a.map do |i|
-      AttackGraph::AttackNode.create(addr: "192.168.99.#{i}")
+    AttackGraph.with_session(session_id) do
+      (101..110).to_a.map do |i|
+        AttackGraph::AttackNode.create(addr: "192.168.99.#{i}")
+      end
     end
   end
 
@@ -25,13 +31,15 @@ describe AttackGraph::AttackNode do
   describe '.count' do
     it 'returns the correct number of attack nodes' do
       attack_nodes
-      before_count = AttackGraph::AttackNode.count
-      attack_nodes[3].destroy
-      attack_nodes[4].destroy
-      attack_nodes[5].destroy
+      AttackGraph.with_session(session_id) do
+        before_count = AttackGraph::AttackNode.count
+        attack_nodes[3].destroy
+        attack_nodes[4].destroy
+        attack_nodes[5].destroy
 
-      expect(before_count).to eq(10)
-      expect(AttackGraph::AttackNode.count).to eq(7)
+        expect(before_count).to eq(10)
+        expect(AttackGraph::AttackNode.count).to eq(7)
+      end
     end
   end
 
@@ -58,18 +66,22 @@ describe AttackGraph::AttackNode do
   describe '.clear' do
     it 'clears all attack nodes' do
       attack_nodes
-      before_count = AttackGraph::AttackNode.count
-      AttackGraph::AttackNode.clear
+      AttackGraph.with_session(session_id) do
+        before_count = AttackGraph::AttackNode.count
+        AttackGraph::AttackNode.clear
 
-      expect(before_count).to eq(10)
-      expect(AttackGraph::AttackNode.count).to eq(0)
+        expect(before_count).to eq(10)
+        expect(AttackGraph::AttackNode.count).to eq(0)
+      end
     end
   end
 
   describe '#services' do
     it 'returns empty array when has no services' do
-      attack_node.save
-      expect(attack_node.services).to be_empty
+      AttackGraph.with_session(session_id) do
+        attack_node.save
+        expect(attack_node.services).to be_empty
+      end
     end
 
     it 'returns service array when has services'
@@ -78,21 +90,25 @@ describe AttackGraph::AttackNode do
   describe '#save' do
     it 'saves to database backend' do
       before_save_persisted = attack_node.persisted?
-      attack_node.save
+      AttackGraph.with_session(session_id) do
+        attack_node.save
 
-      expect(before_save_persisted).to be_nil
-      expect(attack_node.persisted?).to be_truthy
+        expect(before_save_persisted).to be_nil
+        expect(attack_node.persisted?).to be_truthy
+      end
     end
   end
 
   describe '#destroy' do
     it 'destroys itself in the database backend' do
-      attack_node.save
-      before_delete_persisted = attack_node.persisted?
-      attack_node.destroy
+      AttackGraph.with_session(session_id) do
+        attack_node.save
+        before_delete_persisted = attack_node.persisted?
+        attack_node.destroy
 
-      expect(before_delete_persisted).to be_truthy
-      expect(attack_node.persisted?).to be_falsy
+        expect(before_delete_persisted).to be_truthy
+        expect(attack_node.persisted?).to be_falsy
+      end
     end
   end
 

@@ -23,9 +23,11 @@ module XAttackGraphAPI
 
     # CREATE
     post '/sessions/:session_id/nodes' do
+      session_node    = @neo.get_node(params[:session_id])
       node_properties = params[:properties]
       node            = @neo.create_node(node_properties)
       @neo.add_label(node, 'Host')
+      @neo.create_relationship('has_node', session_node, node)
       200
     end
 
@@ -39,13 +41,15 @@ module XAttackGraphAPI
 
     # DESTROY ALL
     delete '/sessions/:session_id/nodes' do
-      @neo.execute_query("match (n:Host) optional match (n)-[r]->(s) delete n, r, s")
+      # @neo.execute_query("match (n:Host) optional match (n)-[r]->(s) delete r, s")
+      @neo.execute_query("match (s:Session)-[rr]->(n) where id(s) = #{params[:session_id]} optional match (n:Host)-[r]->(sv) delete n, rr, r, sv")
       200
     end
 
     # DESTROY
     delete '/sessions/:session_id/nodes/:node_addr' do
-      @neo.execute_query("match (n:Host { addr: '#{params[:node_addr]}' }) optional match (n)-[r]->(s) delete n, r, s")
+      # @neo.execute_query("match (n:Host { addr: '#{params[:node_addr]}' }) optional match (n)-[r]->(s) delete n, r, s")
+      @neo.execute_query("match (s:Session)-[rr]->(n:Host { addr: '#{params[:node_addr]}' }) where id(s) = #{params[:session_id]} optional match (n)-[r]->(sv) delete n, rr, r, sv")
       200
     end
 

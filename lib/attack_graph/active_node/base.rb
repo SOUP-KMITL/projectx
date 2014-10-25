@@ -7,8 +7,8 @@ module AttackGraph
       include HTTParty
       # FIXME:
       base_uri 'localhost:9292'
-      FAKE_SID = 1234
-      @@session_id  = FAKE_SID
+      DEFAULT_SID = 1234
+      @@session_id  = DEFAULT_SID
 
       attr_reader :properties
 
@@ -62,6 +62,14 @@ module AttackGraph
       end
 
       class << self
+        def session_id
+          @@session_id
+        end
+
+        def session_id=(sid)
+          @@session_id = sid
+        end
+
         def create(properties = {})
           active_node = new(properties)
           active_node.save
@@ -95,6 +103,10 @@ module AttackGraph
 
         def clear
           self.delete(base_collection_path)
+        end
+
+        def create_session
+          ActiveSupport::HashWithIndifferentAccess.new(self.post('/sessions'))
         end
 
         def base_path(path=nil)
