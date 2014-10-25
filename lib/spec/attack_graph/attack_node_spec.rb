@@ -19,19 +19,21 @@ describe AttackGraph::AttackNode do
 
   describe '.all' do
     it 'returns all of attack nodes in the database backend' do
-      before_count = AttackGraph::AttackNode.all.count
-      attack_nodes
+      AttackGraph.with_session(session_id) do
+        before_count = AttackGraph::AttackNode.all.count
+        attack_nodes
 
-      expect(before_count).to eq(0)
-      expect(AttackGraph::AttackNode.all.count).to eq(10)
-      expect(AttackGraph::AttackNode.all[1].addr).to eq('192.168.99.102')
+        expect(before_count).to eq(0)
+        expect(AttackGraph::AttackNode.all.count).to eq(10)
+        expect(AttackGraph::AttackNode.all[1].addr).to eq('192.168.99.102')
+      end
     end
   end
 
   describe '.count' do
     it 'returns the correct number of attack nodes' do
-      attack_nodes
       AttackGraph.with_session(session_id) do
+        attack_nodes
         before_count = AttackGraph::AttackNode.count
         attack_nodes[3].destroy
         attack_nodes[4].destroy
@@ -45,17 +47,20 @@ describe AttackGraph::AttackNode do
 
   describe '.find' do
     it 'finds the right attack node' do
-      attack_nodes
-      found = AttackGraph::AttackNode.find('192.168.99.106')
-
-      expect(found.addr).to eq('192.168.99.106')
+      AttackGraph.with_session(session_id) do
+        attack_nodes
+        found = AttackGraph::AttackNode.find('192.168.99.106')
+        expect(found.addr).to eq('192.168.99.106')
+      end
     end
 
     it 'returns nil when it does not found any attack node' do
-      attack_nodes
-      found = AttackGraph::AttackNode.find('192.168.99.120')
+      AttackGraph.with_session(session_id) do
+        attack_nodes
+        found = AttackGraph::AttackNode.find('192.168.99.120')
 
-      expect(found).to be_nil
+        expect(found).to be_nil
+      end
     end
   end
 
@@ -65,8 +70,8 @@ describe AttackGraph::AttackNode do
 
   describe '.clear' do
     it 'clears all attack nodes' do
-      attack_nodes
       AttackGraph.with_session(session_id) do
+        attack_nodes
         before_count = AttackGraph::AttackNode.count
         AttackGraph::AttackNode.clear
 
@@ -89,8 +94,8 @@ describe AttackGraph::AttackNode do
 
   describe '#save' do
     it 'saves to database backend' do
-      before_save_persisted = attack_node.persisted?
       AttackGraph.with_session(session_id) do
+        before_save_persisted = attack_node.persisted?
         attack_node.save
 
         expect(before_save_persisted).to be_nil
@@ -114,13 +119,17 @@ describe AttackGraph::AttackNode do
 
   describe '#persisted?' do
     it 'returns nil when not persisted' do
-      expect(attack_node.persisted?).to be_nil
+      AttackGraph.with_session(session_id) do
+        expect(attack_node.persisted?).to be_nil
+      end
     end
   end
 
   describe '#addr' do
     it 'returns correct address' do
-      expect(attack_node.addr).to eq('192.168.99.101')
+      AttackGraph.with_session(session_id) do
+        expect(attack_node.addr).to eq('192.168.99.101')
+      end
     end
   end
 end
