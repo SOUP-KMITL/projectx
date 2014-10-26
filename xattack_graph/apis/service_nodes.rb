@@ -1,66 +1,46 @@
+require_relative 'helpers/attack_nodes_helper'
+require_relative 'helpers/service_nodes_helper'
+
 module XAttackGraphAPI
   class ServiceNodes < Sinatra::Base
+    include AttackNodesHelper
+    include ServiceNodesHelper
+
     before do
       @neo = Neography::Rest.new
     end
 
-    # INDEX
     get '/sessions/:session_id/nodes/:node_addr/services' do
-      node             = @neo.find_nodes_labeled('Host', addr: params[:node_addr])
-      has_service_rels = @neo.get_node_relationships(node, 'out', 'has_service')
-
-      services = has_service_rels.map do |has_service_rel|
-        @neo.get_node(has_service_rel['end'])['data']
+      services = get_service_nodes(params[:session_id], params[:node_addr]).map do |service|
+        service['data']
       end
 
       json services
     end
 
-    # CREATE
-    post '/sessions/:session_id/nodes/:node_addr/services' do
-      node               = @neo.find_nodes_labeled('Host', addr: params[:node_addr])
-      service_properties = params[:properties]
-      service            = @neo.create_node(service_properties)
-      @neo.add_label(service, 'Service')
-      @neo.create_relationship('has_service', node, service)
-
-      reloaded_properties = @neo.get_node_properties(service)
-      json reloaded_properties
-    end
-
-    # SHOW
     get '/sessions/:session_id/nodes/:node_addr/services/:service_port_id' do
-      service = find_service(params)
+      service = get_service_node(params[:session_id], params[:node_addr], params[:service_port_id])
 
       json service['data']
     end
 
-    # UPDATE
+    post '/sessions/:session_id/nodes/:node_addr/services' do
+      service_node = create_service_node(params[:session_id],
+                                         params[:node_addr],
+                                         params[:properties])
+      json service_node['data']
+    end
+
     put '/sessions/:session_id/nodes/:node_addr/services/:service_port_id' do
-      service_node = find_service(params)
-      @neo.set_node_properties(service_node, params[:properties])
-      200
+      service_node = update_service_node(params[:session_id],
+                                         params[:node_addr],
+                                         params[:service_port_id],
+                                         params[:properties])
+      json service_node['data']
     end
 
     # DESTROY
     delete '/sessions/:session_id/nodes/:node_addr/services/:service_port_id' do
-    end
-
-    private
-
-    def find_service(params)
-      node = @neo.find_nodes_labeled('Host', addr: params[:node_addr])
-
-      has_service_rels = @neo.get_node_relationships(node, 'out', 'has_service')
-
-      services = has_service_rels.map do |has_service_rel|
-        @neo.get_node(has_service_rel['end'])
-      end
-
-      services.select do |s|
-        service_properties = @neo.get_node_properties(s)
-        service_properties['port_id'] == params[:service_port_id]
-      end.first
     end
   end
 end
