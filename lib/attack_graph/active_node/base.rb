@@ -105,8 +105,9 @@ module AttackGraph
           self.delete(base_collection_path)
         end
 
-        def create_session
-          ActiveSupport::HashWithIndifferentAccess.new(self.post('/sessions'))
+        def create_session(options={})
+          ActiveSupport::HashWithIndifferentAccess.new(
+            self.post('/sessions', body: options))
         end
 
         def base_path(path=nil)
