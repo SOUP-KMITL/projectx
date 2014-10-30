@@ -10,12 +10,13 @@ module XS
 
       attr_accessor :targets
 
+      option :session_id
       desc 'simple TARGETS', 'Start scanning on TARGETS'
       def simple(targets_string)
         @targets = []
         extract_ips(targets_string)
         puts "Scanning targets: #{@targets.inspect}"
-        run_at_targets
+        run_at_targets(Strategies::Default, options)
       end
 
       desc 'debug', 'Test running'
@@ -27,9 +28,10 @@ module XS
 
       private
 
-      def run_at_targets(strategy = Strategies::Default)
+      def run_at_targets(strategy = Strategies::Default, options={})
         context = {}
         context[:tmp] = File.expand_path('../../../../tmp', __FILE__)
+        context[:session_id] = options[:session_id]
 
         @targets.each do |target|
           context[:target] = target

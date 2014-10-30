@@ -5,8 +5,6 @@ module XS
   module NmapAdapter
     module Strategies
       class Default
-        FAKE_SID = 1234
-
         class << self
           attr_accessor :context, :host_nodes
 
@@ -19,6 +17,7 @@ module XS
           end
 
           def setup(context)
+            AttackGraph::ActiveNode::Base.session_id = context[:session_id]
             self.context    = context
             self.host_nodes = []
           end
