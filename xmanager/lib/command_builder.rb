@@ -1,15 +1,18 @@
+require 'logger'
 require 'active_support/ordered_options'
 
 module XM
   class CommandBuilder < BasicObject
-    def initialize(xmodule_name)
-      @xmodule_name = xmodule_name
+    def initialize(options={})
+      @xservice_client = options[:xservice_client]
+      @xmodule_name    = options[:xmodule_name]
     end
 
     def method_missing(m, *args, &block)
       strategy_name = m.to_s
-      command = Command.new(xmodule: @xmodule_name,
-                            strategy: strategy_name)
+      command = Command.new(xservice_client: @xservice_client,
+                            xmodule:         @xmodule_name,
+                            strategy:        strategy_name)
       block.call(command.config)
       command
     end
@@ -22,6 +25,8 @@ module XM
       @xmodule  = options[:xmodule]
       @strategy = options[:strategy] || 'default'
       @config   = Config.new
+      @logger   = Logger.new(STDOUT)
+      @xservice_client = options[:xservice_client]
     end
 
     def compiled_config
@@ -31,13 +36,12 @@ module XM
     def start(*target_strings)
       target_strings = "'#{target_strings.join(', ')}'"
       command        = "#{@xmodule} start #{@strategy}"
-      config.compiled.each do |config_key, config_value|
+      compiled_config.each do |config_key, config_value|
         command << " --#{config_key} #{config_value}"
       end
       command << " #{target_strings}"
-      puts "starting: #{command}"
-      # TODO: do something
-      puts "ended"
+      @xservice_client.add_command(command)
+      @logger.info "Add new command: #{command}"
     end
 
     def start_parallel(*target_strings)
