@@ -105,9 +105,17 @@ module AttackGraph
           self.delete(base_collection_path)
         end
 
+        class SessionError < StandardError; end
+
         def create_session(options={})
-          ActiveSupport::HashWithIndifferentAccess.new(
-            self.post('/sessions', body: options))
+          result = self.post('/sessions', body: options)
+
+          raise SessionError, "Could not create a new session" unless result.ok?
+
+          ActiveSupport::HashWithIndifferentAccess.new(result)
+        rescue SystemCallError => e
+          # puts "Could not connect to XAttackGraph server (#{e.class})"
+          raise SessionError, e.message
         end
 
         def base_path(path=nil)
