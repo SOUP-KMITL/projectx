@@ -5,7 +5,7 @@ module XSV
   module XServiceClient
     class Base
       include HTTParty
-      logger ::Logger.new(STDOUT)
+      # logger ::Logger.new(STDOUT)
 
       attr_accessor :session_id
 
