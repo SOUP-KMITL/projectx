@@ -1,0 +1,10 @@
+source "https://rubygems.org"
+
+gem 'sinatra'
+gem 'sinatra-contrib'
+gem 'sidekiq'
+gem 'pry'
+gem 'thor'
+gem 'nokogiri'
+gem 'activesupport'
+gem 'httparty'

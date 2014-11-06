@@ -1,0 +1,122 @@
+plugins
+  <% if @auth.detailed? %>
+  auth detailed
+  auth config detailed
+  back
+  <% end %>
+  crawl phpinfo, web_spider, sitemap_xml, user_dir, oracle_discovery, robots_txt, phishtank, bing_spider
+  crawl config web_spider
+    set follow_regex .*
+    set ignore_regex None
+    # set only_forward False
+    set only_forward True
+  back
+
+  infrastructure allowed_methods, halberd, dns_wildcard, detect_transparent_proxy, fingerprint_os, afd, dot_net_errors, fingerprint_WAF, detect_reverse_proxy, server_status, hmap, find_vhosts, php_eggs, server_header
+  infrastructure config allowed_methods
+    set reportDavOnly True
+    set execOneTime False
+  back
+  infrastructure config hmap
+    set gen_fingerprint False
+  back
+
+  audit frontpage, eval, blind_sqli, phishing_vector, csrf, mx_injection, preg_replace, lfi, ldapi, unssql, ssl_certificate, os_commanding, ssi, sqli, buffer_overflow, xpath, generic, htaccess_methods, rfi, response_splitting, dav, format_string, global_redirect, xst, xss, file_upload, redos
+  audit config eval
+    set use_time_delay True
+    set use_echo True
+  back
+  audit config blind_sqli
+    set eq_limit 0.0
+  back
+  audit config ssl_certificate
+    set minExpireDays 30
+    set caFileName %ROOT_PATH%/plugins/audit/ssl_certificate/ca.pem
+  back
+  audit config generic
+    set diff_ratio 0.35
+  back
+  audit config rfi
+    set use_w3af_site True
+    set listen_address
+    set listen_port 44449
+  back
+  audit config xss
+    set persistent_xss True
+  back
+  audit config file_upload
+    set extensions gif,html
+  back
+
+  grep motw, credit_cards, feeds, path_disclosure, hash_analysis, strange_headers, dot_net_event_validation, directory_indexing, analyze_cookies, get_emails, oracle, meta_tags, strange_http_codes, http_in_body, file_upload, ajax, error_500, lang, objects, dom_xss, wsdl_greper, http_auth_detect, svn_users, password_profiling, blank_body, error_pages, strange_parameters, html_comments, ssn, code_disclosure, private_ip, symfony, form_autocomplete, click_jacking, strange_reason
+  grep config get_emails
+    set only_target_domain True
+  back
+
+  output console, html_file, xml_file
+  output config console
+    set verbose True
+  back
+  output config html_file
+    set output_file <%= "#{@tmp.output_file_path}.html" %>
+  back
+  output config xml_file
+    set output_file <%= "#{@tmp.output_file_path}.xml" %>
+  back
+back
+
+misc-settings
+  set maxThreads 15
+  set form_fuzzing_mode tmb
+  set fuzzed_files_extension gif
+  set autoDependencies True
+  set demo False
+  set fuzzable_headers
+  set showProgressBar True
+  set fuzzCookie False
+  set fuzz_form_files True
+  set fuzz_url_filenames False
+  set max_discovery_time 120
+  set non_targets
+  set fuzz_url_parts False
+  set stop_on_first_exception False
+  set interface ppp0
+  set local_ip_address 10.5.6.18
+  # set msf_location /opt/metasploit3/bin/
+back
+
+http-settings
+  <% if @http_settings.proxy? %>
+  set proxy_address
+  set proxy_port 8080
+  <% end %>
+  set url_parameter
+  set never_404
+  set headers_file
+  set maxFileSize 400000
+  set always_404
+  set max_http_retries 2
+  <% if @auth.ntlm? %>
+  set ntlm_auth_user <%= @auth.username %>
+  set ntlm_auth_passwd <%= @auth.password %>
+  set ntlm_auth_domain
+  set ntlm_auth_url
+  <% elsif @auth.http_basic? %>
+  set basic_auth_domain
+  set basic_auth_user <%= @auth.username %>
+  set basic_auth_passwd <%= @auth.password %>
+  <% end %>
+  set ignore_session_cookies False
+  set timeout 10
+  set user_agent w3af.org
+  set string_match_404
+  set cookie_jar_file
+back
+
+target
+  set target <%= "http://#{@target}/dvwa" %>
+back
+
+cleanup
+start
+exit
