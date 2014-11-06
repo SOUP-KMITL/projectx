@@ -18,11 +18,13 @@ module XA
     }
 
     class Start < Thor
+      option :session_id
       desc 'owasp_topten TARGETS', 'Perform OWASP Top 10 Attacking'
       def owasp_topten(targets_string)
         @targets = XSP::Targets.from_string(targets_string)
 
         @targets.targets_array.each do |target|
+          AttackGraph::ActiveNode::Base.session_id = options[:session_id]
           host_node = AttackGraph::AttackNode.find(target)
           puts "before"
           puts host_node.addr
