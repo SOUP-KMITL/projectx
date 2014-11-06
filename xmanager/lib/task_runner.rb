@@ -11,6 +11,10 @@ module XM
     def initialize(task_file)
       @task_file  = task_file
       @session_id = AttackGraph::ActiveNode::Base.create_session(task: task_file)[:id]
+      @logger     = ::Logger.new(STDOUT)
+    rescue SessionError
+      puts "Could not create a new session"
+      exit
     end
 
     def phases
@@ -22,9 +26,14 @@ module XM
     end
 
     def phase(name, &block)
+      @logger.info "Entering #{name} phase"
       to_run_phase = phases[name].new(@session_id)
       to_run_phase.instance_eval(&block)
+      @logger.info "Connecting to xservice server"
       to_run_phase.run
+    rescue Errno::ECONNREFUSED
+      @logger.fatal "Could not connect to xservice server"
+      exit
     end
 
     def run
