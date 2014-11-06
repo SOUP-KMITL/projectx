@@ -2,6 +2,7 @@ require 'logger'
 require_relative '../../lib/xlib'
 require_relative 'phase'
 require_relative 'xscanner_phase'
+require_relative 'xattacker_phase'
 
 module XM
   class TaskRunner
@@ -15,7 +16,7 @@ module XM
     def phases
       {
         :scanning  => XScannerPhase,
-        :attacking => nil,
+        :attacking => XAttackerPhase,
         :reporting => nil
       }
     end
