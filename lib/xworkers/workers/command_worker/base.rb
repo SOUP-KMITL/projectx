@@ -7,7 +7,8 @@ module XW
         raise NotImplementedError
       end
 
-      def perform(module_name, command)
+      def perform(command)
+        module_name = command.split(' ')[0]
         module_path = "#{self.class.modules_path}/#{module_name}"
         command     = "#{module_path}/#{command}"
         system("#{command}")
