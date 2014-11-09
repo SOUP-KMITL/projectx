@@ -3,7 +3,7 @@ require 'sinatra/base'
 require 'sinatra/json'
 
 require_relative 'application'
-require_relative 'xscanner_service.rb'
+require_relative 'xscanner_service'
 
 module XS
   class XScanner < Sinatra::Base
