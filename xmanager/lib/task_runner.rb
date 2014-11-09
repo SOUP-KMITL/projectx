@@ -3,14 +3,15 @@ require_relative '../../lib/xlib'
 require_relative 'phase'
 require_relative 'xscanner_phase'
 require_relative 'xattacker_phase'
+require_relative 'xreporter_phase'
 
 module XM
   class TaskRunner
     attr_accessor :session_id, :task_file
 
-    def initialize(task_file)
+    def initialize(task_file, options={})
       @task_file  = task_file
-      @session_id = AttackGraph::ActiveNode::Base.create_session(task: task_file)[:id]
+      @session_id = options[:session_id] || AttackGraph::ActiveNode::Base.create_session(task: task_file)[:id]
       @logger     = ::Logger.new(STDOUT)
     rescue SessionError
       puts "Could not create a new session"
@@ -21,7 +22,7 @@ module XM
       {
         :scanning  => XScannerPhase,
         :attacking => XAttackerPhase,
-        :reporting => nil
+        :reporting => XReporterPhase
       }
     end
 
