@@ -19,6 +19,7 @@ module AttackGraph
     end
 
     def average_severity
+      return 0.0 if vulnerabilities.empty?
       severities = vulnerabilities.map(&:severity).map(&:to_f)
       severities.reduce(:+) / severities.size
     end

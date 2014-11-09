@@ -3,11 +3,11 @@ require 'sinatra/base'
 require 'sinatra/json'
 
 require_relative 'application'
-require_relative 'xscanner_service'
+require_relative 'xreporter_service'
 
-module XS
-  class XScanner < Sinatra::Base
+module XR
+  class XReporter < Sinatra::Base
     use Application
-    use XScannerService
+    use XReporterService
   end
 end
