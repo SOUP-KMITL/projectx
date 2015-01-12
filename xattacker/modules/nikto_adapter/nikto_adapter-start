@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+
+require('shelljs/global');
+
+var program = require('commander');
+
+program
+    .command('simple [TARGET]')
+    .action(function (TARGET) {
+        console.log('TARGET is ', TARGET);
+        console.log('RUNNING');
+        exec('nikto ' + TARGET);
+    });
+
+program.parse(process.argv);
