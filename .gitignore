@@ -9,3 +9,6 @@ tmp
 
 # Ignore Redis dump file
 dump.rdb
+
+# Ignore npm modules
+node_modules
