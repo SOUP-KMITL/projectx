@@ -1,0 +1,42 @@
+#!/usr/bin/env node
+
+require('shelljs/global');
+
+const program = require('commander'),
+      request = require('request'),
+      fs = require('fs'),
+      cheerio = require('cheerio');
+      attackGraph = require('../../../lib/attack-graph-js')
+
+const tmpDir = __dirname + '/tmp';
+
+program
+    .command('simple [TARGET]')
+    .action(function (TARGET) {
+        console.log('TARGET is ', TARGET);
+        console.log('RUNNING Nikto Simple');
+        var outputFile = tmpDir + '/nikto_simple_' + Date.now() + '.xml';
+        exec('nikto -h ' + TARGET + ' -o ' + outputFile);
+        attackGraph.sessionId = 1704;
+        attackGraph.attackNode.find(TARGET, function (err, aNode) {
+            if (err) throw err;
+            aNode.services.find(80, function (err, sNode) {
+                if (err) throw err;
+                fs.readFile(outputFile, 'utf8', function (err, data) {
+                    $ = cheerio.load(data, { xmlMode: true });
+                    $('item').each(function () {
+                        console.log();
+                        var desc = $(this).children('description').text();
+                        console.log('\tDESCRIPTION: ', desc);
+                        console.log('\tOSVDBLINK: ', $(this).attr('osvdblink'));
+                        sNode.vulnerabilities.create(attackGraph.vulnNode.new({ description: desc, severity: -1 }));
+                    });
+                });
+            });
+        });
+
+        console.log('END Nikto Simple');
+    });
+
+program.parse(process.argv);
+console.log('END STRATEGY');

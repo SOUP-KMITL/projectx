@@ -10,6 +10,12 @@ require 'apis/service_nodes'
 require 'apis/vuln_nodes'
 
 class XAttackGraph < Sinatra::Base
+  delete '/' do
+    neo = Neography::Rest.new
+    neo.execute_query('match (n) optional match (n)-[r]->() delete n, r')
+    200
+  end
+
   use XAttackGraphAPI::SessionNodes
   use XAttackGraphAPI::AttackNodes
   use XAttackGraphAPI::ServiceNodes
