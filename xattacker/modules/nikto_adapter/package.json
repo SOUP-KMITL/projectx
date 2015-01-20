@@ -10,6 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "commander": "~2.6.0",
-    "shelljs": "~0.3.0"
+    "shelljs": "~0.3.0",
+    "request": "~2.51.0",
+    "cheerio": "~0.18.0"
   }
 }
