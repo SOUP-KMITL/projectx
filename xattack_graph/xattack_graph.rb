@@ -8,6 +8,7 @@ require 'apis/session_nodes'
 require 'apis/attack_nodes'
 require 'apis/service_nodes'
 require 'apis/vuln_nodes'
+require 'apis/connections'
 
 class XAttackGraph < Sinatra::Base
   delete '/' do
@@ -20,4 +21,5 @@ class XAttackGraph < Sinatra::Base
   use XAttackGraphAPI::AttackNodes
   use XAttackGraphAPI::ServiceNodes
   use XAttackGraphAPI::VulnNodes
+  use XAttackGraphAPI::Connections
 end
