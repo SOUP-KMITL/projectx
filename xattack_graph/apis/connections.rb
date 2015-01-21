@@ -14,12 +14,17 @@ module XAttackGraphAPI
       # TODO return both incoming and outgoing connections to src
     end
 
-    # @params src  NODE[addr] | NODE[addr]SERVICE[port]
-    # @params dest NODE[addr] | NODE[addr]SERVICE[port]
-    # @params properties Hash
-    #           confidence 0.0-1.0
-    #           description String
-    #           etc.
+    # @!method post_connections
+    # @param src  [String] string of pattern:
+    #   `"NODE[addr]" or "NODE[addr]SERVICE[port]"`
+    # @param dest [String] string of pattern:
+    #   `"NODE[addr]" or "NODE[addr]SERVICE[port]"`
+    # @param properties [Hash{Symbol => String, Number}]
+    #   confidence: 0.0-1.0
+    #   description: String
+    #   etc.
+    # @return [String] HTTP status code indicate that creation is succeed or
+    #   failed
     post '/sessions/:session_id/connections/?' do
       src  = find_attack_or_service_node(params[:session_id], params[:src])
       dest = find_attack_or_service_node(params[:session_id], params[:dest])
