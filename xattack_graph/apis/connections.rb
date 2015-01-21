@@ -9,9 +9,30 @@ module XAttackGraphAPI
       @neo ||= Neography::Rest.new
     end
 
-    # @params src  NODE[addr] | NODE[addr]SERVICE[port]
-    get '/sessions/:session_id/connections/?' do
-      # TODO return both incoming and outgoing connections to src
+    # @!method get_connection
+    # @param src  [String] string of pattern:
+    #   `"NODE[addr]" or "NODE[addr]SERVICE[port]"`
+    get '/sessions/:session_id/connections/:src/?' do
+      src  = find_attack_or_service_node(params[:session_id], params[:src])
+      rels = @neo.get_node_relationships(src, 'out', 'connect')
+
+      rels.map! do |rel|
+        end_node = @neo.get_node(rel['end'])
+        service  = nil
+
+        if @neo.get_node_labels(end_node).include?('Service')
+          has_service_rel = @neo.get_node_relationships(end_node, 'in', 'has_service').first
+          service         = end_node['data']['service_name']
+          end_node        = @neo.get_node(has_service_rel['start'])
+        end
+
+        {
+          node: end_node['data']['addr'],
+          service: service,
+        }.merge!(rel['data'])
+      end
+
+      json rels
     end
 
     # @!method post_connections
