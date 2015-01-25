@@ -24,6 +24,14 @@ module AttackGraph
       severities.reduce(:+) / severities.size
     end
 
+    def connect_to(options={})
+      self.class.post("#{base_singular_path}/connections/", body: options)
+    end
+
+    def connections
+      self.class.get("#{base_singular_path}/connections/")
+    end
+
     def reload
       # TODO: super
       @vulnerabilities = nil
