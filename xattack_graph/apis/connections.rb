@@ -1,5 +1,5 @@
 module XAttackGraphAPI
-  class ConnectionPatternError < StandardError; end
+  class ConnectionParamsError < StandardError; end
 
   class Connections < Sinatra::Base
     include AttackNodesHelper
@@ -10,11 +10,9 @@ module XAttackGraphAPI
     end
 
     # @!method get_connection
-    # @param src  [String] string of pattern:
-    #   `"NODE[addr]" or "NODE[addr]SERVICE[port]"`
-    get '/sessions/:session_id/connections/:src/?' do
-      src  = find_attack_or_service_node(params[:session_id], params[:src])
-      rels = @neo.get_node_relationships(src, 'out', 'connect')
+    get '/sessions/:session_id/nodes/:node_addr/connections/?' do
+      src  = get_attack_node(params[:session_id], params[:node_addr])
+      rels = @neo.get_node_relationships(src, 'out', 'connect_to')
 
       rels.map! do |rel|
         end_node = @neo.get_node(rel['end'])
@@ -36,21 +34,19 @@ module XAttackGraphAPI
     end
 
     # @!method post_connections
-    # @param src  [String] string of pattern:
-    #   `"NODE[addr]" or "NODE[addr]SERVICE[port]"`
-    # @param dest [String] string of pattern:
-    #   `"NODE[addr]" or "NODE[addr]SERVICE[port]"`
+    # @param addr [String] destination node
+    # @param port_id [Number] destination service port
     # @param properties [Hash{Symbol => String, Number}]
     #   confidence: 0.0-1.0
-    #   description: String
+    #   reason: String
     #   etc.
     # @return [String] HTTP status code indicate that creation is succeed or
     #   failed
-    post '/sessions/:session_id/connections/?' do
-      src  = find_attack_or_service_node(params[:session_id], params[:src])
-      dest = find_attack_or_service_node(params[:session_id], params[:dest])
+    post '/sessions/:session_id/nodes/:node_addr/connections/?' do
+      src  = get_attack_node(params[:session_id], params[:node_addr])
+      dest = find_attack_or_service_node(params)
 
-      rel  = @neo.create_relationship('connect', src, dest)
+      rel  = @neo.create_relationship('connect_to', src, dest)
       @neo.set_relationship_properties(rel, params[:properties])
 
       200
@@ -58,18 +54,16 @@ module XAttackGraphAPI
 
     private
 
-    def find_attack_or_service_node(session_id, pattern)
-      if (m = pattern.match(/NODE\[([^\]]*)\]SERVICE\[([^\]]*)\]/))
-        addr    = m[1]
-        port_id = m[2]
+    def find_attack_or_service_node(params={})
+      addr    = params[:addr]
+      port_id = params[:port_id]
 
-        get_service_node(session_id, addr, port_id)
-      elsif (m = pattern.match(/NODE\[([^\]]*)\]/))
-        addr    = m[1]
-
-        get_attack_node(session_id, addr)
+      if port_id
+        get_service_node(params[:session_id], addr, port_id)
+      elsif addr
+        get_attack_node(params[:session_id], addr)
       else
-        raise ConnectionPatternError
+        raise ConnectionParamsError
       end
     end
   end
