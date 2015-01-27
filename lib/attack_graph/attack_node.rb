@@ -7,11 +7,13 @@ module AttackGraph
     base_path '/nodes'
     has_many :services, class: ServiceNode
 
-    def has_service?(service_name)
+    def service(service_name)
       services.to_a.find do |service|
         service.service_name == service_name.to_s
       end
     end
+
+    alias_method :has_service?, :service
 
     def vulnerabilities
       # TODO: make this Association and can be flatten
@@ -22,6 +24,14 @@ module AttackGraph
       return 0.0 if vulnerabilities.empty?
       severities = vulnerabilities.map(&:severity).map(&:to_f)
       severities.reduce(:+) / severities.size
+    end
+
+    def connect_to(options={})
+      self.class.post("#{base_singular_path}/connections/", body: options)
+    end
+
+    def connections
+      self.class.get("#{base_singular_path}/connections/")
     end
 
     def reload
