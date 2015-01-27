@@ -2,6 +2,8 @@ require 'httparty'
 require 'active_support/hash_with_indifferent_access'
 
 module AttackGraph
+  class SessionError < StandardError; end
+
   module ActiveNode
     class Base
       include HTTParty
@@ -104,8 +106,6 @@ module AttackGraph
         def clear
           self.delete(base_collection_path)
         end
-
-        class SessionError < StandardError; end
 
         def create_session(options={})
           result = self.post('/sessions', body: options)

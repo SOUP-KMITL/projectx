@@ -11,9 +11,9 @@ module XM
 
     def initialize(task_file, options={})
       @task_file  = task_file
-      @session_id = options[:session_id] || AttackGraph::ActiveNode::Base.create_session(task: task_file)[:id]
+      @session_id = options['session_id'] || AttackGraph.create_session(task: task_file)[:id]
       @logger     = ::Logger.new(STDOUT)
-    rescue SessionError
+    rescue AttackGraph::SessionError
       puts "Could not create a new session"
       exit
     end

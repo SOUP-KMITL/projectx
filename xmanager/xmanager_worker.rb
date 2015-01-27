@@ -3,6 +3,6 @@ require_relative 'app/workers/task_worker'
 
 module XM
   class XManagerWorker < XW::XWorkers::Base
-    namespace :xworker
+    namespace :xmanager
   end
 end
