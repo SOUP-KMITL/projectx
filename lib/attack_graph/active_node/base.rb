@@ -43,6 +43,11 @@ module AttackGraph
         @properties[m] || super
       end
 
+      def respond_to_missing?(m, include_private=false)
+        m = m.to_s.chop! if m[-1] == '='
+        @properties[m] || super
+      end
+
       def persisted?
         self.class.get(base_singular_path)[self.class.primary_key.to_s]
       end
