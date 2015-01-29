@@ -25,7 +25,6 @@ module XR
       def json(output_file)
         poro = AllInOnePORO.new(options)
         serializer = AllInOneSerializer.new(poro)
-        puts serializer.as_json.to_json
         File.open(output_file, 'w') do |f|
           f.write serializer.as_json.to_json
         end
