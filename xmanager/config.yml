@@ -1,0 +1,22 @@
+users:
+  - username: testusername
+    password: testpassword
+    api_key: f61d8bf4b51d670093c68858ad0eb024efb85481ca2ccbf43d9d7c8c89ce75
+  - username: testusername2
+    password: testpassword2
+    api_key: e8db2f21966d0992e7101e1dfa4628dd0cabb89f2a80a18387345d8c3432fba8
+xscanner:
+  host: 192.168.1.2
+  port: 3002
+xattacker:
+  host: 192.168.1.3
+  port: 3003
+xreporter:
+  host: 192.168.1.4
+  port: 3004
+xlogger:
+  host: 192.168.1.5
+  port: 3005
+xattack_graph:
+  host: 192.168.1.6
+  port: 4001
