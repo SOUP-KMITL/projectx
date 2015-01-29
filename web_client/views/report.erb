@@ -1,0 +1,70 @@
+<div class="row">
+  <div class="col-md-12">
+    <a class="btn btn-default" href="/sessions"><span class="glyphicon glyphicon-arrow-left"></span> Back</a>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-8">
+    <div id="graph-panel" class="panel panel-default">
+      <div class="panel-body">
+        <div id="graph-container"></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div id="detail-panel" class="panel panel-default">
+      <div class="panel-heading">
+        Detail
+      </div>
+      <div id="detail-panel-body" class="panel-body">
+        <em>Click any node</em>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/js/jquery.min.js"></script>
+<script src="/js/handlebars.js"></script>
+<script src="/js/sigma/sigma.min.js"></script>
+<script>
+  Handlebars.registerHelper('list', function(items, options) {
+    var out = '<ul class="list-group">';
+
+    for (var i=0; i < items.length; i++) {
+      out = out + '<li class="list-group-item">' + options.fn(items[i]) + "</li>";
+    }
+
+    return out + "</ul>";
+  });
+</script>
+<script id="node-template" type="text/x-handlebars-template">
+<div>
+  <strong>address: </strong><span>{{addr}}</span>
+  <p>
+    <strong>services:</strong>
+    <p>
+      {{#list services}}{{name}}{{/list}}
+    </p>
+  </p>
+</div>
+</script>
+<script>
+  var source = $('#node-template').html();
+  var template = Handlebars.compile(source);
+
+  var g = <%= g.to_json %>;
+  var s = new sigma({
+    graph: g,
+    renderer: {
+      container: document.getElementById('graph-container'),
+      type: 'canvas'
+    },
+    settings: {
+      defaultNodeColor: '#ec5148',
+    },
+  });
+
+  s.bind('clickNode', function (e) {
+      var context = { addr: e.data.node.id, services: e.data.node.properties.services };
+      $('#detail-panel-body').html(template(context));
+  });
+</script>

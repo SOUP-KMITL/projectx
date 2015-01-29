@@ -1,7 +1,9 @@
 <!doctype html>
 <html>
   <head>
+    <title>XWebClient<%= " | #{title}" if defined?(title) %></title>
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/graph.css">
   </head>
   <body>
     <nav class="navbar navbar-default">
@@ -10,9 +12,8 @@
           <a class="navbar-brand" href="/">XWebClient</a>
         </div>
         <ul class="nav navbar-nav">
-          <li><a href="/">Home</a></li>
           <% if session[:user] %>
-            <li><a href="/sessions">Sessions</a></li>
+            <li class="<%= 'active' if request.path_info =~ /sessions/ %>"><a href="/sessions">Sessions</a></li>
           <% end %>
         </ul>
         <% if session[:user] %>
