@@ -24,7 +24,7 @@ module XS
 
           apps.each do |a|
             dbs.each do |d|
-              a.connect_to(addr: d[:node_addr], port_id: d[:port_id])
+              a.connect_to(addr: d[:node_addr], port_id: d[:port_id], properties: { confidence: 0.1, reason: 'web app to db' })
             end
           end
         end
