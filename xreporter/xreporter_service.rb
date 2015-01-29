@@ -5,8 +5,17 @@ require_relative 'app/workers/command_worker'
 module XR
   class XReporterService < XSV::XServiceServer::Base
     set :command_worker, CommandWorker
+
     Sidekiq.configure_client do |config|
       config.redis = { :namespace => 'xreporter', :size => 1 }
+    end
+
+    get '/sessions/:session_id/reports/?' do
+      # TODO
+    end
+
+    get '/sessions/:session_id/reports/:report_name/?' do
+      json JSON.parse(File.read(File.expand_path("../reports/#{params[:session_id]}/#{params[:report_name]}", __FILE__)))
     end
   end
 end
