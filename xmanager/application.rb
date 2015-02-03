@@ -31,7 +31,12 @@ module XM
     end
 
     get '/sessions/:session_id/?' do
-      # TODO:
+      session_properties = nil
+      AttackGraph.with_session(params[:session_id]) do
+        session_properties = AttackGraph.session_properties
+      end
+
+      json session_properties
     end
 
     post '/signin/?' do
