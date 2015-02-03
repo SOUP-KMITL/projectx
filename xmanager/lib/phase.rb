@@ -22,6 +22,12 @@ module XM
       @xservice_client.run
     end
 
+    def update_progress(progress)
+      AttackGraph.with_session(@xservice_client.session_id) do
+        AttackGraph::update_session({ progress: progress })
+      end
+    end
+
     def respond_to_missing?(m)
       if self.class.modules.include?(m.to_s)
         true

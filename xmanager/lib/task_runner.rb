@@ -37,6 +37,12 @@ module XM
       exit
     end
 
+    def update_progress(progress)
+      AttackGraph.with_session(@session_id) do
+        AttackGraph::update_session({ progress: progress })
+      end
+    end
+
     def run
       instance_eval(File.read(@task_file), @task_file)
     end
