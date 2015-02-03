@@ -23,7 +23,12 @@ class WebApp < Sinatra::Base
   end
 
   get '/' do
-    erb :index
+    tasks = xclient.tasks
+    tasks.map! do |t|
+      t.match(/(\w+).rb$/).captures.first
+    end
+
+    erb :index, locals: { tasks: tasks }
   end
 
   get '/sessions' do
@@ -36,6 +41,10 @@ class WebApp < Sinatra::Base
     end
 
     erb :sessions, locals: { title: 'Sessions', sessions: sessions }
+  end
+
+  post '/sessions' do
+    json xclient.create_session(task: params[:task])
   end
 
   get '/sessions/:session_id/reports/:report_name' do
@@ -73,9 +82,13 @@ class WebApp < Sinatra::Base
   private
 
   def xclient(api_key=nil)
+    if !api_key && session[:user]
+      api_key = session[:user]['api_key']
+    end
+
     base_uri  = settings.xmanager[:server_addr]
     base_uri += ":#{settings.xmanager[:server_port]}" if settings.xmanager[:server_port]
 
-    @xclient ||= XClient.new(base_uri: base_uri, api_key: api_key)
+    @xclient  = XClient.new(base_uri: base_uri, api_key: api_key)
   end
 end

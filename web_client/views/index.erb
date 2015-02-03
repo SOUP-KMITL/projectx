@@ -12,6 +12,22 @@
 <div class="row">
   <div class="col-md-10 col-md-offset-1">
     <h1>Tasks</h1>
-    <p>TODO: Tasks list here</p>
+    <div style="margin-top: 20px">
+    <% tasks.each do |t| %>
+      <p><a class="btn btn-default x-btn-task" style="width: 400px; display: block; margin: auto" href="#"><%= t %></a></p>
+    <% end %>
+    </div>
+    <div id="x-task-panel" class="well" style="height: 200px; display: none">
+    </div>
   </div>
 </div>
+<script src="/js/jquery.min.js"></script>
+<script>
+  $('.x-btn-task').click(function () {
+    var task = $(this).html();
+    $('#x-task-panel').show();
+    $.post('/sessions', { task: task }, function (data) {
+      console.log(data);
+    });
+  });
+</script>
