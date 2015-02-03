@@ -19,7 +19,9 @@ module XM
 
     post '/sessions/?' do
       session_hash = AttackGraph.create_session
-      TaskWorker.perform_async(params[:task], session_id: session_hash[:id])
+      user = user_from_api_key(params[:api_key])
+      TaskWorker.perform_async(params[:task], session_id: session_hash[:id],
+                                              username: user['username'])
 
       json session_hash
     end
@@ -43,19 +45,22 @@ module XM
     end
 
     get '/tasks/?' do
-      # TODO: return user's tasks
-      # tasks/username/*
+      user = user_from_api_key(params[:api_key])
+
+      json Dir[File.expand_path("users/#{user['username']}/tasks/*.rb")]
     end
 
     get '/sessions/:session_id/reports/?' do
       # TODO
       # proxy to xreporter /sessions/:session_id/reports
+      # check access permission
       json [ 'test.html', 'tmp_file3.json' ]
     end
 
     get '/sessions/:session_id/reports/:report_name/?' do
       # TODO
       # proxy to xreporter /sessions/:session_id/reports/:report_name
+      # check access permission
       json XReporterClient.report(params[:session_id], params[:report_name])
     end
   end

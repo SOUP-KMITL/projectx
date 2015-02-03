@@ -6,11 +6,14 @@ module XM
     include Sidekiq::Worker
 
     def perform(task_name, options={})
-      TaskRunner.new(task_path(task_name), options).run
+      username  = options.delete('username')
+      task_path = task_path(username, task_name)
+      TaskRunner.new(task_path, options).run
     end
 
-    def task_path(task_name)
-      File.expand_path("../../../tasks/#{task_name}.rb", __FILE__)
+    def task_path(username, task_name)
+        File.expand_path("../../../users/#{username}/tasks/#{task_name}.rb",
+                         __FILE__)
     end
   end
 end

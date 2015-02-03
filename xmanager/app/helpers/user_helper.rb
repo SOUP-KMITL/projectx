@@ -10,6 +10,10 @@ module XM
 
       nil
     end
+
+    def user_from_api_key(key)
+      settings.users.find { |user| user['api_key'] == key }
+    end
   end
 end
 
