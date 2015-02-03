@@ -43,6 +43,10 @@ class WebApp < Sinatra::Base
     erb :sessions, locals: { title: 'Sessions', sessions: sessions }
   end
 
+  get '/sessions/:session_id' do
+    json xclient.session(params[:session_id])
+  end
+
   post '/sessions' do
     json xclient.create_session(task: params[:task])
   end

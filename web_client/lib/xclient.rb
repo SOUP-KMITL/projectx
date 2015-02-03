@@ -28,6 +28,14 @@ class XClient
     JSON.parse(res.body)
   end
 
+  def session(session_id)
+    res = self.class.get("/sessions/#{session_id}", query: @options)
+
+    return unless res.ok?
+
+    JSON.parse(res.body)
+  end
+
   def tasks
     res = self.class.get('/tasks', query: @options)
 
