@@ -2,8 +2,8 @@ require_relative '../../../lib/xservice'
 
 module XM
   class XReporterClient < XSV::XServiceClient::Base
-    # TODO: Read from YAML
-    base_uri 'localhost:3004'
+    settings = YAML.load_file(File.expand_path('../../../config.yml', __FILE__))['xreporter']
+    base_uri "#{settings['host']}:#{settings['port']}"
 
     class << self
       def report(session_id, report_name)
