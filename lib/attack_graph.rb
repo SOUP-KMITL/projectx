@@ -16,4 +16,8 @@ module AttackGraph
   def self.create_session
     ActiveNode::Base.create_session
   end
+
+  def self.update_session(properties={})
+    ActiveNode::Base.update_session(properties)
+  end
 end

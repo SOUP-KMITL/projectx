@@ -123,6 +123,16 @@ module AttackGraph
           raise SessionError, e.message
         end
 
+        def update_session(properties={})
+          result = self.put("/sessions/#{session_id}", body: { properties: properties })
+
+          raise SessionError, 'Could not update the session' unless result.ok?
+
+          ActiveSupport::HashWithIndifferentAccess.new(result)
+        rescue SystemCallError => e
+          raise SessionError, e.message
+        end
+
         def base_path(path=nil)
           return @base_path if path.nil?
           @base_path = path
