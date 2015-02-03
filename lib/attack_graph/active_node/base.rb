@@ -133,6 +133,16 @@ module AttackGraph
           raise SessionError, e.message
         end
 
+        def session_properties
+          result = self.get("/sessions/#{session_id}")
+
+          raise SessionError, 'Could not retrieve the session' unless result.ok?
+
+          ActiveSupport::HashWithIndifferentAccess.new(result)
+        rescue SystemCallError => e
+          raise SessionError, e.message
+        end
+
         def base_path(path=nil)
           return @base_path if path.nil?
           @base_path = path
