@@ -5,23 +5,29 @@ require_relative 'attack_graph/service_node'
 require_relative 'attack_graph/vuln_node'
 
 module AttackGraph
-  def self.with_session(session_id)
-    old_session_id = ActiveNode::Base.session_id
-    ActiveNode::Base.session_id = session_id
-    result = yield
-    ActiveNode::Base.session_id = old_session_id
-    result
-  end
+  class << self
+    def with_session(session_id)
+      old_session_id = ActiveNode::Base.session_id
+      ActiveNode::Base.session_id = session_id
+      result = yield
+      ActiveNode::Base.session_id = old_session_id
+      result
+    end
 
-  def self.create_session
-    ActiveNode::Base.create_session
-  end
+    def all_sessions
+      ActiveNode::Base.all_sessions
+    end
 
-  def self.update_session(properties={})
-    ActiveNode::Base.update_session(properties)
-  end
+    def create_session
+      ActiveNode::Base.create_session
+    end
 
-  def self.session_properties
-    ActiveNode::Base.session_properties
+    def update_session(properties={})
+      ActiveNode::Base.update_session(properties)
+    end
+
+    def session_properties
+      ActiveNode::Base.session_properties
+    end
   end
 end

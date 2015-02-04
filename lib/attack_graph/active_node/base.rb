@@ -112,6 +112,16 @@ module AttackGraph
           self.delete(base_collection_path)
         end
 
+        def all_sessions
+          result = self.get('/sessions')
+
+          raise SessionError, "Could not retrieve sessions" unless result.ok?
+
+          JSON.parse(result.body)
+        rescue SystemCallError => e
+          raise SessionError, e.message
+        end
+
         def create_session(options={})
           result = self.post('/sessions', body: options)
 
