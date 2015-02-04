@@ -14,11 +14,6 @@ require_relative 'serializers/all_in_one_serializer'
 
 module XR
   module AllInOne
-    Vuln = Struct.new(:name, :description, :severity)
-    Service = Struct.new(:service_name, :port_id, :software) do
-      attr_accessor :vulnerabilities
-    end
-
     class Start < Thor
       option :session_id
       desc 'json', 'Generating all-in-one JSON format'
