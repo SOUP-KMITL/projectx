@@ -12,3 +12,9 @@ dump.rdb
 
 # Ignore npm modules
 node_modules
+
+# Ignore users directory
+xmanager/users
+
+# Ignore reports directory
+xreporter/reports
