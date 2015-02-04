@@ -32,13 +32,11 @@ class WebApp < Sinatra::Base
   end
 
   get '/sessions' do
-    s = { id: 1704 }
-
-    sessions = [ s, s, s ]
+    sessions = xclient.sessions
 
     sessions.each do |ss|
-      ss[:reports] = xclient.reports(ss[:id])
-    end
+      ss[:reports] = xclient.reports(ss['id'])
+    end.reverse!
 
     erb :sessions, locals: { title: 'Sessions', sessions: sessions }
   end
