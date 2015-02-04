@@ -27,7 +27,14 @@ module XM
     end
 
     get '/sessions/?' do
-      # TODO:
+      return 401 if params[:api_key].nil? || params[:api_key].empty?
+
+      api_key = params[:api_key]
+
+      sessions = AttackGraph.all_sessions
+      sessions.select! { |s| s['api_key'] == api_key }
+
+      json sessions
     end
 
     get '/sessions/:session_id/?' do
