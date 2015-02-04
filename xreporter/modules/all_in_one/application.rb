@@ -2,8 +2,7 @@ require 'thor'
 require 'active_support'
 require 'active_support/core_ext'
 require 'active_model_serializers'
-
-require 'ostruct'
+require 'fileutils'
 
 require_relative '../../../lib/xlib'
 
@@ -16,10 +15,17 @@ module XR
   module AllInOne
     class Start < Thor
       option :session_id
+      option :root_dir
       desc 'json', 'Generating all-in-one JSON format'
       def json(output_file)
         poro = AllInOnePORO.new(options)
         serializer = AllInOneSerializer.new(poro)
+
+        if options[:root_dir]
+          FileUtils::mkdir_p(options[:root_dir]) unless Dir.exists?(options[:root_dir])
+          output_file = "#{options[:root_dir]}/#{output_file}"
+        end
+
         File.open(output_file, 'w') do |f|
           f.write serializer.as_json.to_json
         end
