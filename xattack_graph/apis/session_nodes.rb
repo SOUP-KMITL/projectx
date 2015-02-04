@@ -20,7 +20,11 @@ module XAttackGraphAPI
 
     get '/sessions/?' do
       session_nodes = @neo.get_nodes_labeled('Session')
-      session_nodes.map! { |s| @neo.get_node_properties(s) }
+      session_nodes.map! do |s|
+        session_node_properties      = @neo.get_node_properties(s)
+        session_node_properties[:id] = s['self'].match(/data\/node\/(\d+)\Z/).captures.first.to_i
+        session_node_properties
+      end
 
       json session_nodes
     end
