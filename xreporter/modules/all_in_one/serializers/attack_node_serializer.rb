@@ -1,6 +1,6 @@
 class AttackNodeSerializer < ActiveModel::Serializer
   self.root = false
-  attributes :addr, :addrtype
+  attributes :addr, :addrtype, :average_severity
   has_many :services, serializer: ServiceNodeSerializer
   has_many :connections
 
@@ -32,7 +32,7 @@ class AttackNodeSerializer < ActiveModel::Serializer
     end
 
     conns_arr = []
-    
+
     conns.each do |addr, conn|
       conns_arr << conn.merge({ node: addr })
     end
