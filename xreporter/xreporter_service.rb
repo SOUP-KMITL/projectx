@@ -17,5 +17,11 @@ module XR
     get '/sessions/:session_id/reports/:report_name/?' do
       json JSON.parse(File.read(File.expand_path("../reports/#{params[:session_id]}/#{params[:report_name]}", __FILE__)))
     end
+
+    def add_default_options(command, session_hash)
+      command << ' --root_dir '
+      command << File.expand_path("../reports/#{session_hash[:session_id]}", __FILE__)
+      super
+    end
   end
 end
