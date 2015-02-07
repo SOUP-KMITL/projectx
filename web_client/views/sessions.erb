@@ -17,7 +17,7 @@
             </div>
             <div class="col-md-2">
               <% if s['progress'] == '100' %>
-                <a class="btn btn-default" href="#">View Report</a>
+                <a class="btn btn-default" href="/sessions/<%= s['id'] %>/report">View Report</a>
               <% else %>
                 <a class="btn btn-default" href="#" disabled>View Report</a>
               <% end %>

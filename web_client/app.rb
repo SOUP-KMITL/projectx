@@ -46,8 +46,8 @@ class WebApp < Sinatra::Base
     json xclient.create_session(task: params[:task])
   end
 
-  get '/sessions/:session_id/reports/:report_name' do
-    report = xclient.report(params[:session_id], params[:report_name])
+  get '/sessions/:session_id/report' do
+    report = xclient.report(params[:session_id], 'all_in_one.json')
 
     sigma = XSigma.from_all_in_one_json(report)
 
