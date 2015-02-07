@@ -59,7 +59,15 @@ module XM
     get '/tasks/?' do
       user = user_from_api_key(params[:api_key])
 
-      json Dir[File.expand_path("users/#{user['username']}/tasks/*.rb")]
+      return 403 if user.nil?
+
+      tasks = Dir[File.expand_path("users/#{user['username']}/tasks/*.rb")]
+
+      tasks.map! do |t|
+        t.match(/(\w+).rb$/).captures.first
+      end
+
+      json tasks
     end
 
     get '/sessions/:session_id/reports/?' do

@@ -24,9 +24,6 @@ class WebApp < Sinatra::Base
 
   get '/' do
     tasks = xclient.tasks
-    tasks.map! do |t|
-      t.match(/(\w+).rb$/).captures.first
-    end
 
     erb :index, locals: { tasks: tasks }
   end
