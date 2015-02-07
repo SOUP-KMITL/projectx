@@ -9,12 +9,16 @@ module XSV
         }
 
         session_hash[:commands].each do |command|
-          command << ' --session_id '
-          command << session_hash[:session_id]
+          add_default_options(command, session_hash)
           settings.command_worker.perform_async(command)
         end
 
         json session_hash
+      end
+
+      def add_default_options(command, session_hash)
+        command << ' --session_id '
+        command << session_hash[:session_id]
       end
     end
   end
