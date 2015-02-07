@@ -11,13 +11,15 @@ const program = require('commander'),
 const tmpDir = __dirname + '/tmp';
 
 program
+    .option('-s, --session_id <n>', 'A session id', parseInt)
     .command('simple [TARGET]')
     .action(function (TARGET) {
         console.log('TARGET is ', TARGET);
+        console.log('session_id is ', program.session_id);
         console.log('RUNNING Nikto Simple');
         var outputFile = tmpDir + '/nikto_simple_' + Date.now() + '.xml';
         exec('nikto -h ' + TARGET + ' -o ' + outputFile);
-        attackGraph.sessionId = 1704;
+        attackGraph.sessionId = program.session_id;
         attackGraph.attackNode.find(TARGET, function (err, aNode) {
             if (err) throw err;
             aNode.services.find(80, function (err, sNode) {
