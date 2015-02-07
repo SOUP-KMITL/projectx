@@ -3,6 +3,7 @@ require 'erb'
 require 'tilt'
 require 'nokogiri'
 require 'active_support/core_ext/hash/conversions'
+require 'securerandom'
 
 require_relative '../../../lib/xlib'
 
@@ -41,7 +42,7 @@ module XA
             scope = Object.new
             auth = HttpBasicAuth.new(username: 'testUsername', password: 'testPassword')
             http_settings = HttpSettings.new
-            session = Time.now.to_i
+            session = "#{Time.now.to_i}_#{SecureRandom.hex(4)}"
             tmp = Tmp.new(session, File.expand_path('../tmp', __FILE__))
             scope.instance_variable_set(:@target, target)
             scope.instance_variable_set(:@auth, auth)
@@ -54,7 +55,7 @@ module XA
             end
 
             puts "running w3af_console -s #{tmp.script_file_path}"
-            puts `w3af_console -s #{tmp.script_file_path}`
+            `w3af_console -s #{tmp.script_file_path}`
             open_xml("#{tmp.output_file_path}.xml") do |oxml|
               extract_vulnerabilities(http_service_node, oxml)
             end
