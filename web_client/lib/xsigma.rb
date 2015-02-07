@@ -13,7 +13,7 @@ class XSigma
           label: n['addr'],
           x: x,
           y: y,
-          size: 3
+          size: [2,4].sample
         }.merge({ properties: n })
 
         if x < 4
@@ -34,7 +34,8 @@ class XSigma
             id: "#{n['addr']}_to_#{conn['node']}",
             source: n['addr'],
             target: conn['node'],
-            type: 'arrow'
+            type: 'arrow',
+            size: 20
           }
         end
       end
