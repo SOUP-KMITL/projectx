@@ -6,13 +6,13 @@ users:
     password: testpassword2
     api_key: e8db2f21966d0992e7101e1dfa4628dd0cabb89f2a80a18387345d8c3432fba8
 xscanner:
-  host: 192.168.1.2
+  host: localhost
   port: 3002
 xattacker:
-  host: 192.168.1.3
+  host: localhost
   port: 3003
 xreporter:
-  host: 192.168.1.4
+  host: localhost
   port: 3004
 xlogger:
   host: 192.168.1.5
