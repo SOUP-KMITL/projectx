@@ -15,6 +15,14 @@ module AttackGraph
 
     alias_method :has_service?, :service
 
+    def vuln(vuln_name)
+      vulnerabilities.to_a.find do |vuln|
+        vuln.name == vuln_name.to_s if vuln.respond_to?(:name)
+      end
+    end
+
+    alias_method :has_vuln?, :vuln
+
     def vulnerabilities
       # TODO: make this Association and can be flatten
       @vulnerabilities ||= services.map(&:vulnerabilities).map(&:to_a).flatten
