@@ -25,15 +25,32 @@
 <script src="/js/jquery.min.js"></script>
 <script src="/js/handlebars.js"></script>
 <script src="/js/sigma/sigma.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
 <script>
   Handlebars.registerHelper('list', function(items, options) {
     var out = '<ul class="list-group">';
 
-    for (var i=0; i < items.length; i++) {
-      out = out + '<li class="list-group-item">' + options.fn(items[i]) + "</li>";
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].vulnerabilities.length === 0) {
+        out = out + '<li class="list-group-item">' + options.fn(items[i]) + '</li>';
+      } else {
+        vuln_names = items[i].vulnerabilities.map(function (v) {
+          return v.name || v.description;
+        });
+
+        var vulns_list = "<ul class='list-group'>";
+
+        for (var j = 0; j < vuln_names.length; j++) {
+          vulns_list = vulns_list + "<li class='list-group-item'>" + vuln_names[j] + '</li>';
+        }
+
+        vulns_list = vulns_list + '</ul>';
+
+        out = out + '<li class="list-group-item"><a class="service-item" tabindex="0" role="button" data-toggle="popover" data-content="' + vulns_list + '" title="Vulnerabilities">' + options.fn(items[i]) + "</a></li>";
+      }
     }
 
-    return out + "</ul>";
+    return out + '</ul>';
   });
 </script>
 <script id="node-template" type="text/x-handlebars-template">
@@ -65,7 +82,14 @@
   });
 
   s.bind('clickNode', function (e) {
-      var context = { addr: e.data.node.id, services: e.data.node.properties.services };
-      $('#detail-panel-body').html(template(context));
+    var context = { addr: e.data.node.id, services: e.data.node.properties.services };
+    $('#detail-panel-body').html(template(context));
+    bindClickDetailItem();
   });
+
+  function bindClickDetailItem() {
+    $('.service-item').popover({ animation: false, placement: 'bottom', trigger: 'focus', html: true });
+    // $('.service-item').click(function () {
+    // });
+  }
 </script>
