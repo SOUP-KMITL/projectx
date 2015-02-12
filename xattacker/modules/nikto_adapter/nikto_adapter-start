@@ -12,33 +12,93 @@ const tmpDir = __dirname + '/tmp';
 
 program
     .option('-s, --session_id <n>', 'A session id', parseInt)
-    .command('simple [TARGET]')
-    .action(function (TARGET) {
-        console.log('TARGET is ', TARGET);
+    .option('-p, --port <n>', 'A port id', parseInt)
+    .command('simple [TARGETS]')
+    .action(function (TARGETS) {
+        console.log('TARGETS is ', TARGETS);
         console.log('session_id is ', program.session_id);
+        targets_array = parseTargets(TARGETS);
         console.log('RUNNING Nikto Simple');
-        var outputFile = tmpDir + '/nikto_simple_' + Date.now() + '.xml';
-        exec('nikto -h ' + TARGET + ' -o ' + outputFile);
-        attackGraph.sessionId = program.session_id;
-        attackGraph.attackNode.find(TARGET, function (err, aNode) {
-            if (err) throw err;
-            aNode.services.find(80, function (err, sNode) {
-                if (err) throw err;
-                fs.readFile(outputFile, 'utf8', function (err, data) {
-                    $ = cheerio.load(data, { xmlMode: true });
-                    $('item').each(function () {
-                        console.log();
-                        var desc = $(this).children('description').text();
-                        console.log('\tDESCRIPTION: ', desc);
-                        console.log('\tOSVDBLINK: ', $(this).attr('osvdblink'));
-                        sNode.vulnerabilities.create(attackGraph.vulnNode.new({ description: desc, severity: -1 }));
-                    });
-                });
-            });
+        var i = 0;
+
+        // Set default port if not given
+        if (program.port === undefined)
+            program.port = 80;
+
+        targets_array.forEach(function (target) {
+          var outputFile = tmpDir + '/nikto_simple_' + Date.now() + '_' + (i++) + '_.xml';
+          exec('nikto -h ' + target + ' -o ' + outputFile + ' -p ' + program.port);
+          attackGraph.sessionId = program.session_id;
+          attackGraph.attackNode.find(target, function (err, aNode) {
+              if (err) throw err;
+              aNode.services.find(program.port, function (err, sNode) {
+                  if (err) throw err;
+                  fs.readFile(outputFile, 'utf8', function (err, data) {
+                      $ = cheerio.load(data, { xmlMode: true });
+                      $('item').each(function () {
+                          console.log();
+                          var desc = $(this).children('description').text();
+                          console.log('\tDESCRIPTION:', desc);
+                          console.log('\tOSVDBLINK:', $(this).attr('osvdblink'));
+                          var osvdbid = parseInt($(this).attr('osvdbid'));
+                          var name = parseName(osvdbid);
+                          var severity = parseSeverity(osvdbid);
+                          console.log('\tName:', name);
+                          console.log('\tSeverity:', severity);
+                          sNode.vulnerabilities.create(attackGraph.vulnNode.new({ name: name, xmodule: 'nikto_adapter', description: desc, severity: severity }));
+                      });
+                  });
+              });
+          });
         });
 
         console.log('END Nikto Simple');
     });
 
 program.parse(process.argv);
+
+function parseTargets(TARGETS) {
+    return TARGETS.split(', ');
+}
+
+function parseName(osvdbid) {
+  switch (osvdbid) {
+    case 3233:
+        return 'Configuration Exposed';
+    case 0:
+    case 877:
+    case 48:
+        return 'Potential Miss Configuration';
+    case 3233:
+    case 12184:
+        return 'Potential Sensitive Information Exposed';
+    case 3092:
+        return 'Potential Sensitive Information Exposed';
+    case 3268:
+        return 'Directory Indexing';
+    default:
+        return 'Unnamed Vulnerability';
+  }
+}
+
+function parseSeverity(osvdbid) {
+    switch (osvdbid) {
+        case 3233:
+            return 3;
+        case 0:
+        case 877:
+        case 48:
+            return 5;
+        case 3233:
+        case 12184:
+            return 7;
+        case 3092:
+            return 9;
+        case 3268:
+            return 10;
+        default:
+            return -1;
+    }
+}
+
 console.log('END STRATEGY');
