@@ -21,6 +21,7 @@ module XM
     def phases
       {
         :scanning        => XScannerPhase,
+        :after_scanning  => XScannerPhase,
         :attacking       => XAttackerPhase,
         :after_attacking => XAttackerPhase,
         :reporting       => XReporterPhase
