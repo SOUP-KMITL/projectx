@@ -12,7 +12,11 @@ class ServiceNodeSerializer < ActiveModel::Serializer
   end
 
   def software
-    "somesoftware 3.1.2"
+    if object.respond_to?(:product) && !object.product.empty?
+      "#{object.product} #{object.version}"
+    else
+      'unknown'
+    end
   end
 
   def vulnerabilities
