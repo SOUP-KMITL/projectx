@@ -1,7 +1,6 @@
 <div class="row">
   <div class="col-md-10 col-md-offset-1">
     <h1>Overview</h1>
-    <p>TODO: Chart here</p>
   </div>
 </div>
 <div class="row">
@@ -14,20 +13,40 @@
     <h1>Tasks</h1>
     <div style="margin-top: 20px">
     <% tasks.each do |t| %>
-      <p><a class="btn btn-default x-btn-task" style="width: 400px; display: block; margin: auto" href="#"><%= t %></a></p>
+      <p><a class="btn btn-default x-btn-task" style="width: 400px; display: block; margin: auto"><%= t %></a></p>
     <% end %>
     </div>
-    <div id="x-task-panel" class="well" style="height: 200px; display: none">
+    <div id="x-task-panel" style="margin-top: 30px; display: none">
     </div>
   </div>
 </div>
 <script src="/js/jquery.min.js"></script>
+<script src="/js/handlebars.js"></script>
+<script id="progress-template" type="text/x-handlebars-template">
+<div class="progress" style="height: 10px">
+  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{progress}}%>" aria-valuemin="0" aria-valuemax="100" style="width: {{progress}}%">
+    <span class="sr-only">{{progress}}% Complete (success)</span>
+  </div>
+</div>
+</script>
 <script>
   $('.x-btn-task').click(function () {
     var task = $(this).html();
     $('#x-task-panel').show();
     $.post('/sessions', { task: task }, function (data) {
       console.log(data);
+      setInterval(function () {
+        update_progress_panel(data['id']);
+      }, 1000);
     });
   });
+
+  function update_progress_panel(session_id) {
+    var source = $('#progress-template').html();
+    var template = Handlebars.compile(source);
+
+    $.get('/sessions/' + session_id, function (data) {
+      $('#x-task-panel').html(template(data));
+    });
+  }
 </script>
