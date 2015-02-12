@@ -38,7 +38,7 @@ module XS
 
           def scan(host_node)
             output_file = "#{context[:tmp]}/nmap_scan_#{Time.now.to_i}.xml"
-            `nmap -PN #{host_node.addr} -oX #{output_file} --no-stylesheet`
+            `nmap -PN #{host_node.addr} -oX #{output_file} -sV --no-stylesheet`
 
             open_xml(output_file) { |oxml| extract_services_for(host_node, oxml) }
           end
@@ -67,7 +67,9 @@ module XS
                 port_id: service_hash['portid'],
                 state: service_hash['state']['state'],
                 service_name: service_hash['service']['name'],
-                conf: service_hash['service']['conf']
+                conf: service_hash['service']['conf'],
+                product: service_hash['service']['product'],
+                version: service_hash['service']['version']
               }
               host_node.services.create(service_attrs)
             end
