@@ -30,6 +30,7 @@ GEM
       os (>= 0.9.6)
       rake (>= 0.8.7)
       rubyzip (>= 1.0.0)
+    net-ssh (2.9.2)
     nokogiri (1.6.3.1)
       mini_portile (= 0.6.0)
     os (0.9.6)
@@ -79,6 +80,7 @@ DEPENDENCIES
   activesupport
   httparty
   neography
+  net-ssh
   nokogiri
   pry
   sidekiq
