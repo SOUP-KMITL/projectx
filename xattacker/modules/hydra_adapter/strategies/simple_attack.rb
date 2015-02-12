@@ -31,11 +31,11 @@ module XA
         def perform_checking
           attack_node = AttackGraph::AttackNode.find(@attack_options[:target])
           puts 'has attack_node' if attack_node
-          attack_node && attack_node.has_service?(:ssh)
+          attack_node && attack_node.has_service?(@attack_options[:service])
         end
 
         def perform_attack
-          `hydra -L #{attack_options[:user_list]} -P #{attack_options[:dictionary]} -t #{attack_options[:tasks]} -o #{attack_options[:output]} #{attack_options[:target]} #{attack_options[:service]}`
+          `hydra -L #{attack_options[:user_list]} -e n -P #{attack_options[:dictionary]} -t #{attack_options[:tasks]} -o #{attack_options[:output]} #{attack_options[:target]} #{attack_options[:service]}`
         end
 
         def before_attack
@@ -48,11 +48,12 @@ module XA
           File.new(output_file).each do |line|
             unless line =~ COMMENT_MATCH
               puts line
-              caps     = line.scan(/login:\s([^\s]*)\s+password:\s*([^\s]+)/)
+              caps     = line.scan(/login:\s([^\s]*)\s+password:\s*([^\s]*)/)
               login    = caps[0][0]
               password = caps[0][1]
               @service_node.vulnerabilities.create(name: 'weak_password',
-                                                   detail: "login: #{login}, password: #{password}",
+                                                   xmodule: 'hydra_adapter',
+                                                   description: "login: #{login}, password: #{password}",
                                                    severity: 10)
             end
           end
