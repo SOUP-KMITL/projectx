@@ -52,7 +52,8 @@ module XA
               login    = caps[0][0]
               password = caps[0][1]
               @service_node.vulnerabilities.create(name: 'weak_password',
-                                                   detail: "login: #{login}, password: #{password}")
+                                                   detail: "login: #{login}, password: #{password}",
+                                                   severity: 10)
             end
           end
         end
