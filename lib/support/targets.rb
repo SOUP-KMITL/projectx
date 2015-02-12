@@ -1,3 +1,5 @@
+require 'ipaddr'
+
 module XSP
   class Targets
     REGULAR_IPS_MATCH = /\A[^\s\-]\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}[^\/,-]*\Z/
@@ -21,15 +23,15 @@ module XSP
         targets_array = targets_string.split(',')
         targets_array.map!(&:strip)
 
-        _extract_regular_ips(targets_array)
-        _extract_ranged_ips(targets_array)
-        _extract_subneted_ips(targets_array)
+        targets_array = _extract_regular_ips(targets_array)
+        targets_array = _extract_ranged_ips(targets_array)
+        targets_array = _extract_subneted_ips(targets_array)
+
+        targets_array
       end
 
       def _extract_regular_ips(targets_array)
-        targets_array.keep_if do |target|
-          target =~ REGULAR_IPS_MATCH
-        end
+        targets_array
       end
 
       def _extract_ranged_ips(targets_array)
@@ -37,7 +39,13 @@ module XSP
       end
 
       def _extract_subneted_ips(targets_array)
-        targets_array
+        holder = []
+
+        targets_array.each do |target|
+          holder += IPAddr.new(target).to_range.to_a.map(&:to_s)
+        end
+
+        holder
       end
     end
   end
