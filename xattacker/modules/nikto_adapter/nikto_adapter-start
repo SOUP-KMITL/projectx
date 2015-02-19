@@ -9,6 +9,7 @@ const program = require('commander'),
       attackGraph = require('../../../lib/attack-graph-js')
 
 const tmpDir = __dirname + '/tmp';
+const cveBaseUrl = 'http://cve.mitre.org/cgi-bin/cvename.cgi?name=';
 
 program
     .option('-s, --session_id <n>', 'A session id', parseInt)
@@ -43,9 +44,16 @@ program
                           var osvdbid = parseInt($(this).attr('osvdbid'));
                           var name = parseName(osvdbid);
                           var severity = parseSeverity(osvdbid);
+                          var cveUrl = null;
+
+                          var cveName = parseCveUrl(osvdbid);
+                          if (cveName !== null)
+                             cveUrl = cveBaseUrl + cveName;
+
                           console.log('\tName:', name);
                           console.log('\tSeverity:', severity);
-                          sNode.vulnerabilities.create(attackGraph.vulnNode.new({ name: name, xmodule: 'nikto_adapter', description: desc, severity: severity }));
+                          console.log('\tCveUrl:', cveUrl);
+                          sNode.vulnerabilities.create(attackGraph.vulnNode.new({ name: name, xmodule: 'nikto_adapter', description: desc, severity: severity, cve_url: cveUrl }));
                       });
                   });
               });
@@ -98,6 +106,19 @@ function parseSeverity(osvdbid) {
             return 10;
         default:
             return -1;
+    }
+}
+
+function parseCveUrl(osvdbid) {
+    switch (osvdbid) {
+        case 877:
+            return '2005-3398';
+        case 48:
+            return '1999-0678';
+        case 3268:
+            return '1999-0569';
+        default:
+            return null;
     }
 }
 
