@@ -5,3 +5,8 @@ gem 'sinatra-contrib'
 gem 'activesupport'
 gem 'httparty'
 gem 'sidekiq', '3.2.5'
+gem 'activerecord'
+gem 'sqlite3'
+gem 'tilt'
+gem 'whenever', :require => false
+gem 'rake'
