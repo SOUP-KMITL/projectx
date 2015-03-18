@@ -37,7 +37,7 @@ module XM
     end
 
     def create_weekly(schedule)
-      context = {} # FIXME
+      context       = schedule.serializable_hash.with_indifferent_access
       create_and_run_schedule('weekly', context)
     end
 

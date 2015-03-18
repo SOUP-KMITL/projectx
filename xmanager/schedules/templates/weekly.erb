@@ -1,0 +1,3 @@
+every :<%= day %>, :at => '<%= at %>' do
+  rake 'runner:start[<%= api_key %>,<%= task_name %>]', :output => 'cron.log'
+end
